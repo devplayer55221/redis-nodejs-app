@@ -29,12 +29,12 @@ module.exports = app => {
 			//await client.HSET('user', 'name', name1, function(err, reply) { console.log(reply); });
 			//await client.hSet("user", "name", "asdf");
 			//await client.json.set('user', '.', insdata);
-			await client.HSET(username1, {
+			await client.set(username1, JSON.stringify({
 	  			'name': name1,
 	  			'password': password1,
 	  			'description': desc1,
 	  			'role': 'user'
-			});
+			}));
 
 			console.log("set done");
 			
@@ -68,23 +68,39 @@ module.exports = app => {
 			console.log("In controller get");
 			console.log(req.body);
 
-			const data = await client.HGETALL(req.body.uname).then((data) => {
-	      		return data;
-	    	});
+			await client.get(req.body.uname, function (err, data) {
+				if (err){
+					throw(err);
+				}
+				else{
+					res.status(200).json({message: data});
+				}
+			});
 	    	// await client.HGETALL('asdf', function(err, object) {
 	    	// 	console.log(object);
 	    	// })
-	    	console.log(data);
-
-	    	res.status(200).json({message: data});
+	    	
 	    } catch(err) {
 	    	res.status(500).json({message: "Some kind of error"});
 	    }
 
 	});
 
-		app.post('/trial', function (req, res) {
-		    redis.set(req.body.key, "default");
+		app.post('/trial', async (req, res) => {
+			try {
+				console.log("In controller get");
+				console.log(req.body);
+	
+				const data = await client.set(req.body.key, "default")
+				// await client.HGETALL('asdf', function(err, object) {
+				// 	console.log(object);
+				// })
+				// console.log(data);
+	
+				res.status(200).json({message: "OK"});
+			} catch(err) {
+				res.status(500).json({message: err.message});
+			}
 		});
 
 };

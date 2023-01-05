@@ -1,7 +1,7 @@
 const redis = require('redis');
 const client = redis.createClient();
 
-client.connect();
+// client.connect();
 
 console.log("in db config");
 
